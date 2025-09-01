@@ -1,36 +1,166 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Product CMS - Next.js
+
+A modern Content Management System for products built with Next.js, NeonDB (PostgreSQL), and Tailwind CSS.
+
+## Features
+
+- ✅ **Product Management**: Create, read, update, and delete products
+- ✅ **Status Management**: Draft, Published, and Archived statuses
+- ✅ **Live Site View**: Public-facing page showing only published products
+- ✅ **Responsive Design**: Works on desktop and mobile devices
+- ✅ **Real-time Updates**: Instant refresh after operations
+- ✅ **Modal Forms**: Clean UI for adding and editing products
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: NeonDB (PostgreSQL)
+- **HTTP Client**: Axios
+- **Deployment**: Vercel
+
+## Database Schema
+
+```sql
+-- Create the custom status type
+CREATE TYPE product_status AS ENUM ('Draft', 'Published', 'Archived');
+
+-- Create the products table
+CREATE TABLE products (
+    product_id   SERIAL PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    product_desc TEXT,
+    status       product_status DEFAULT 'Draft',
+    
+    -- Audit Columns
+    created_by   VARCHAR(50) NOT NULL,
+    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_by   VARCHAR(50),
+    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_deleted   BOOLEAN DEFAULT FALSE
+);
+```
+
+## API Endpoints
+
+- `GET /api/allProducts` - Get all products (excluding deleted)
+- `POST /api/allProducts` - Create a new product
+- `PATCH /api/allProducts` - Update an existing product
+- `DELETE /api/allProducts` - Soft delete a product
+- `GET /api/live` - Get only published products
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- NeonDB account and database
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd next-project-cms
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env.local` file in the root directory:
+   ```env
+   DATABASE_URL=your_neondb_connection_string
+   ```
+
+4. **Set up the database**
+   Run the SQL commands above in your NeonDB console to create the table.
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Deployment on Vercel
+
+### 1. Push to GitHub
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin <your-github-repo-url>
+git push -u origin main
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Deploy on Vercel
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Go to [vercel.com](https://vercel.com)
+2. Sign in with your GitHub account
+3. Click "New Project"
+4. Import your GitHub repository
+5. Add environment variable:
+   - `DATABASE_URL`: Your NeonDB connection string
+6. Click "Deploy"
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+├── app/
+│   ├── api/
+│   │   ├── allProducts/
+│   │   │   └── route.js          # CRUD operations for products
+│   │   └── live/
+│   │       └── route.js          # Published products only
+│   ├── live/
+│   │   └── page.jsx              # Public live site
+│   ├── globals.css
+│   ├── layout.js
+│   └── page.js
+├── components/
+│   └── ProductManagement.jsx     # Main admin interface
+├── lib/
+│   └── config/
+│       └── db.js                 # Database connection
+├── public/
+├── .env.local                    # Environment variables
+├── vercel.json                   # Vercel configuration
+└── README.md
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Admin Interface
+- Access the admin interface at `/`
+- Create, edit, and delete products
+- Change product status (Draft/Published/Archived)
+- View live site
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Live Site
+- Access the public site at `/live`
+- Shows only published products
+- Clean, public-facing design
 
-## Deploy on Vercel
+## Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | NeonDB connection string | `postgresql://user:pass@host/db` |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
